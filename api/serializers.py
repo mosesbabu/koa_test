@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Points
+from .models import Point
 
 class PointSerializer(serializers.ModelSerializer):
     class Meta:
