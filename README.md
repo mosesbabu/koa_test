@@ -74,7 +74,7 @@ python manage.py test api.tests
 
 ## Configuration
 
-- The Django settings can be found in the `closestpoints/settings.py` file. Modify this file to adjust any desired configurations, such as database settings, allowed hosts, or secret key.
+- The Django settings can be found in the `koa_test/settings.py` file. you can Modify this file to adjust any desired configurations, such as database settings, allowed hosts, or secret key.
 
 ## License
 
