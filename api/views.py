@@ -29,3 +29,20 @@ class ClosestPointsAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def find_closest_points(self, points):
+        min_distance = float('inf')
+        closest_points = []
+
+        for i in range(len(points)):
+            for j in range(i + 1, len(points)):
+                distance = self.calculate_distance(points[i], points[j])
+                if distance < min_distance:
+                    min_distance = distance
+                    closest_points = [points[i], points[j]]
+
+        return closest_points
+
+    def calculate_distance(self, point1, point2):
+        x1, y1 = point1
+        x2, y2 = point2
+        return ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
