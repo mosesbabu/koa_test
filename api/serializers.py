@@ -3,5 +3,5 @@ from .models import Point
 
 class PointSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Points
-        fields = ('points',)
+        model = Point
+        fields = ('point',)
