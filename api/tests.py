@@ -15,10 +15,10 @@ class ClosestPointsAPITest(TestCase):
         }
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(len(response.data['coordinates']), 2)
+        self.assertEqual(len(response.data['pointss']), 2)
 
         # Check if the points are stored in the database
         stored_points = Point.objects.all()
         self.assertEqual(stored_points.count(), 2)
-        self.assertEqual(stored_points[0].coordinates, '2,2')
-        self.assertEqual(stored_points[1].coordinates, '4,5')
+        self.assertEqual(stored_points[0].points, '2,2')
+        self.assertEqual(stored_points[1].points, '4,5')

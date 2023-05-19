@@ -22,13 +22,14 @@ class ClosestPointsAPIView(APIView):
         closest_points_coordinates = [
             f"{point[0]},{point[1]}" for point in closest_points
         ]
-
-        serializer = PointSerializer(data={'points_array': closest_points_coordinates}, many=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        point_serializer = PointSerializer(data=[{'points_array': input_points_list}],many=True)
+        closest_points_serializer = PointSerializer(data=[{'points_array': closest_points_coordinates}],many=True)
+        #serializer = PointSerializer(data={'points_array': closest_points_coordinates}, many=True)
+        if point_serializer.is_valid() and closest_points_serializer.is_valid():
+            point_serializer.save()
+            closest_points_serializer.save()
+            return Response(closest_points_coordinates, status=status.HTTP_201_CREATED)
+        return Response(point_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     def find_closest_points(self, points):
         min_distance = float('inf')
         closest_points = []
