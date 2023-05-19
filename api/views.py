@@ -1,35 +1,42 @@
-from django.shortcuts import render
-
-# Create your views here.
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Point
 from .serializers import PointSerializer
+from math import dist
 
 class ClosestPointsAPIView(APIView):
     def post(self, request):
-        input_points = request.data.get('points_array', '')
+        input_points = request.data.get('points', '')
         input_points_list = input_points.split(';')
-        points_array = []
+        points = []
 
         for point in input_points_list:
-            points = point.split(',')
-            if len(points) == 2:
-                points_array.append((int(points[0]), int(points[1])))
+            coordinates = point.split(',')
+            if len(coordinates) == 2:
+                points.append((int(coordinates[0]), int(coordinates[1])))
 
-        closest_points = self.find_closest_points(points_array)
+        closest_points = self.find_closest_points(points)
         closest_points_coordinates = [
             f"{point[0]},{point[1]}" for point in closest_points
         ]
-        point_serializer = PointSerializer(data=[{'points_array': input_points_list}],many=True)
-        closest_points_serializer = PointSerializer(data=[{'points_array': closest_points_coordinates}],many=True)
-        #serializer = PointSerializer(data={'points_array': closest_points_coordinates}, many=True)
+
+        # Save the received set of points and the closest points in the database
+        point_serializer = PointSerializer(data={'coordinates': input_points_list})
+        closest_points_serializer = PointSerializer(data={'coordinates': closest_points_coordinates})
+        
         if point_serializer.is_valid() and closest_points_serializer.is_valid():
             point_serializer.save()
             closest_points_serializer.save()
             return Response(closest_points_coordinates, status=status.HTTP_201_CREATED)
-        return Response(point_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        errors = {}
+        if not point_serializer.is_valid():
+           errors['input_points'] = point_serializer.errors
+        if not closest_points_serializer.is_valid():
+           errors['closest_points'] = closest_points_serializer.errors
+
+        return Response({'errors': errors}, status=status.HTTP_400_BAD_REQUEST)
     def find_closest_points(self, points):
         min_distance = float('inf')
         closest_points = []
